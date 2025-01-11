@@ -10,12 +10,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { translateColor } from '@/utils/colorTranslator'
+import  {colorSchema}  from '@/schemas/colorSchema'
 
-const formSchema = z.object({
-  color: z.string().min(1, {
-    message: "Please enter a color name.",
-  }),
-})
 
 export default function EnhancedColorTranslator() {
   const [result, setResult] = useState<string | null>(null)
@@ -23,14 +19,14 @@ export default function EnhancedColorTranslator() {
   const [color, setColor] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof colorSchema>>({
+    resolver: zodResolver(colorSchema),
     defaultValues: {
       color: "",
     },
   })
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof colorSchema>) {
     setIsLoading(true)
     setError(null)
     setResult(null)
