@@ -4,12 +4,12 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
-import AppTextField from '@/components/core/app-text-field'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from "@/components/ui/button"
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
-import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form"
-
-import { translateColor } from '@/utils/colorTranslator';
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { translateColor } from '@/utils/colorTranslator'
 
 const formSchema = z.object({
   color: z.string().min(1, {
@@ -17,32 +17,11 @@ const formSchema = z.object({
   }),
 })
 
-
-const colorMap: Record<string, string> = {
-  red: "#FF0000",
-  green: "#00FF00",
-  blue: "#0000FF",
-  yellow: "#FFFF00",
-  purple: "#800080",
-  orange: "#FFA500",
-  pink: "#FFC0CB",
-  brown: "#A52A2A",
-  black: "#000000",
-  white: "#FFFFFF",
-  gray: "#808080",
-  cyan: "#00FFFF",
-  magenta: "#FF00FF",
-  lime: "#00FF00",
-  indigo: "#4B0082",
-  violet: "#EE82EE",
-  // Add more colors as needed
-};
-
-export default function ColorTranslator() {
-  const [result, setResult] = useState<{ hexCode: string } | null>(null)
+export default function EnhancedColorTranslator() {
+  const [result, setResult] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [color, setColor] = useState('')
-
+  const [isLoading, setIsLoading] = useState(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,65 +30,107 @@ export default function ColorTranslator() {
     },
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    const hexCode = translateColor(values.color.toLowerCase().trim());
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true)
+    setError(null)
+    setResult(null)
+
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 1000))
+
+    const translationResult = translateColor(values.color)
     setColor(values.color)
 
-    if (hexCode) {
-      setResult({ hexCode });
-      setError(null);
+    if (translationResult.success && translationResult.hexCode) {
+      setResult(translationResult.hexCode)
     } else {
-      setResult(null);
-      setError(`Color "${values.color}" not found in our database.`);
+      setError(`Color "${values.color}" not found in our database.`)
     }
 
+    setIsLoading(false)
   }
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader>
-        <CardTitle>Color Translator</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="color"
-              render={({ field }) => (
-                <FormItem>
-                  <AppTextField label="Enter a color name" {...field} />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" className="w-full">
-              Translate
-            </Button>
-          </form>
-        </Form>
+    <div className="w-full max-w-2xl space-y-6">
+      <h1 className="text-4xl font-bold text-center">Dynamic Color Translator</h1>
+      
+      <Card className="w-full bg-white shadow-sm">
+        <CardContent className="p-6 space-y-4">
+          <h2 className="text-xl font-semibold">Color Translator</h2>
+          
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="color"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-600">Enter a color name</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="Enter a color name" 
+                        {...field} 
+                        className="border border-gray-200 rounded-md p-2 w-full focus:ring-0 focus:border-gray-300"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button 
+                type="submit" 
+                className="w-full bg-black hover:bg-gray-800 text-white rounded-md py-2"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Translating...' : 'Translate'}
+              </Button>
+            </form>
+          </Form>
 
-        {result && (
-        <div className="mt-4 p-4 bg-gray-100 rounded-md">
-          <p className="text-lg">
-            Hex code for <span className="font-semibold">{color}</span>: 
-            <span className="font-mono ml-2">{result.hexCode}</span>
-          </p>
-          <div 
-            className="mt-2 w-full h-12 rounded-md" 
-            style={{ backgroundColor: result.hexCode }}
-            aria-label={`Color preview for ${color}`}
-          ></div>
-        </div>
-      )}
+          <AnimatePresence mode="wait">
+            {result && (
+              <motion.div
+                key="result"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="mt-4"
+              >
+                <div className="space-y-2">
+                  <p className="text-gray-600">
+                    Color <span className="font-medium text-black">{color}</span>
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <div 
+                      className="w-8 h-8 rounded border"
+                      style={{ backgroundColor: result }}
+                    />
+                    <code className="bg-gray-100 px-2 py-1 rounded text-sm">
+                      {result}
+                    </code>
+                  </div>
+                </div>
+              </motion.div>
+            )}
 
-      {error && (
-        <div className="mt-4 p-4 bg-red-100 text-red-700 rounded-md" role="alert">
-          <p>{error}</p>
-        </div>
-      )}
-      </CardContent>
-    </Card>
+            {error && (
+              <motion.div
+                key="error"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="mt-4 text-red-600 text-sm"
+                role="alert"
+              >
+                {error}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </CardContent>
+      </Card>
+    </div>
   )
 }
 
