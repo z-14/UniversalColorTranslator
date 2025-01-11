@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+
     "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
@@ -13,6 +14,8 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "types": ["@testing-library/jest-dom"],
+
     "plugins": [
       {
         "name": "next"
@@ -22,6 +25,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/__test__/colorTranslator.test.jstor.src/app/__test__/colorTranslator.test.jsolorTranslator.test.js"],
   "exclude": ["node_modules"]
 }
