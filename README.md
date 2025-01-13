@@ -94,10 +94,6 @@ This tool provides a simple yet functional utility to translate color names into
   ```bash
   npm run test
   ```
-- Run specific test files:
-  ```bash
-  npm run test __tests__/utils/translateColor.test.ts
-  ```
 
 ### Example Test Cases:
 - **Known Colors**:

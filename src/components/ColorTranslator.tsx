@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from "@/components/ui/button"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { translateColor } from '@/utils/colorTranslator'
@@ -48,7 +48,6 @@ export default function EnhancedColorTranslator() {
 
   return (
     <div className="w-full max-w-2xl space-y-6">
-      <h1 className="text-4xl font-bold text-center">Dynamic Color Translator</h1>
       
       <Card className="w-full bg-white shadow-sm">
         <CardContent className="p-6 space-y-4">
